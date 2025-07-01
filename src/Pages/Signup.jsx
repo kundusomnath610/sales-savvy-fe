@@ -1,133 +1,123 @@
+// src/pages/Signup.jsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 
-function SignUpForm() {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    dob: '',
-    gender: '',
-    role: ''
-  });
+export default function Signup() {
+  // 1. State for each field
+  const [username, setUsername] = useState('');
+  const [email, setEmail]     = useState('');
+  const [password, setPassword] = useState('');
+  const [dob, setDob]         = useState('');
+  const [gender, setGender]   = useState('');
+  const [role, setRole]       = useState('');
 
-  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // 2. Submit handler
+  const handleSubmit = (e) => {
+    e.preventDefault();   // prevent page reload
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8080/signUp', formData);
-      setMessage(response.data); // "User Saved" or "Failed"
-    } catch (error) {
-      setMessage('Error occurred during sign-up');
-    }
+    const user = { username, email, password, dob, gender, role };
+
+    axios
+      .post('http://localhost:8080/signUp', user)
+      .then(res => {
+        console.log('Signup OK:', res.data);
+        alert('Signed up: ' + res.data);
+
+        navigate('/sign_in_page')
+      })
+      .catch(err => {
+        console.error('Signup failed:', err);
+        alert('Error signing up – check console');
+      });
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-      <form onSubmit={handleSubmit} style={{
-        background: '#fff',
-        padding: '30px',
-        borderRadius: '8px',
-        width: '100%',
-        maxWidth: '400px',
-        boxShadow: '0 0 10px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign Up From</h2>
+    <form onSubmit={handleSubmit}>
+      <h2>Sign up below:</h2>
 
+      <label>Username:</label>
+      <input
+        type="text"
+        value={username}
+        onChange={e => setUsername(e.target.value)}
+        required
+      />
+      <br></br><br></br>
+      <label>Email:</label>
+      <input
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        required
+      />
+      <br></br><br></br>
+      <label>Password:</label>
+      <input
+        type="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        required
+      />
+      <br></br><br></br>
+      <label>Gender:</label>
+      <label>
         <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          required
-          value={formData.username}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          value={formData.email}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-          value={formData.password}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          type="date"
-          name="dob"
-          required
-          value={formData.dob}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <select
+          type="radio"
           name="gender"
+          value="MALE"
+          onChange={e => setGender(e.target.value)}
           required
-          value={formData.gender}
-          onChange={handleChange}
-          style={inputStyle}
-        >
-          <option value="">Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-
+        /> Male
+      </label>
+      <label>
         <input
-          type="text"
+          type="radio"
+          name="gender"
+          value="FEMALE"
+          onChange={e => setGender(e.target.value)}
+        /> Female
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="gender"
+          value="OTHER"
+          onChange={e => setGender(e.target.value)}
+        /> Other
+      </label>
+      <br></br><br></br>
+      <label>Date of Birth:</label>
+      <input
+        type="date"
+        value={dob}
+        onChange={e => setDob(e.target.value)}
+        required
+      />
+      <br></br><br></br>
+      <label>Role:</label>
+      <label>
+        <input
+          type="radio"
           name="role"
-          placeholder="Role"
+          value="ADMIN"
+          onChange={e => setRole(e.target.value)}
           required
-          value={formData.role}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <button type="submit" style={{
-          width: '100%',
-          padding: '10px',
-          backgroundColor: '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          fontSize: '16px',
-          cursor: 'pointer'
-        }}>Sign Up</button>
-
-        {message && <p style={{ textAlign: 'center', marginTop: '15px', color: 'gray' }}>{message}</p>}
-      </form>
-    </div>
+        /> Admin
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="role"
+          value="CUSTOMER"
+          onChange={e => setRole(e.target.value)}
+        /> Customer
+      </label>
+      <br></br><br></br>
+      <button type="submit">Sign Up</button>
+    </form>
   );
 }
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px',
-  marginBottom: '15px',
-  border: '1px solid #ccc',
-  borderRadius: '5px',
-  fontSize: '14px'
-};
-
-export default SignUpForm;
