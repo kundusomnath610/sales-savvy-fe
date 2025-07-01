@@ -1,64 +1,89 @@
-
-// src/pages/Signup.jsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'
 
-export default function Signup() {
-  // 1. State for each field
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+function SignInForm() {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
 
-  const navigate = useNavigate();
+  const [message, setMessage] = useState('');
 
-  // 2. Submit handler
-  const handleSubmit = (e) => {
-    e.preventDefault();   // prevent page reload
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-    const data = { username, password };
-
-    axios
-      .post('http://localhost:8080/signIn', data)
-      .then(res => {
-        console.log('Sign in OK:', res.data);
-        const role = res.data
-        if (role === 'admin') {
-          navigate('/admin_page')
-        }
-        if (role === 'customer') {
-          navigate('/customer_page')
-        }
-      })
-      .catch(err => {
-        console.error('Signin failed:', err);
-        alert('Error signing in – check console');
-      });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8080/signIn', formData);
+      setMessage(response.data); // "User Saved" or "Failed"
+    } catch (error) {
+      setMessage('Error occurred during sign-in');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Sign up below:</h2>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+      <form onSubmit={handleSubmit} style={{
+        background: '#fff',
+        padding: '30px',
+        borderRadius: '8px',
+        width: '100%',
+        maxWidth: '400px',
+        boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+      }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In Form </h2>
 
-      <label>Username:</label>
-      <input
-        type="text"
-        value={username}
-        onChange={e => setUsername(e.target.value)}
-        required
-      />
-      <br></br><br></br>
-      
-      <label>Password:</label>
-      <input
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        required
-      />
-      <br></br><br></br>
-      
-      <button type="submit">Sign IN</button>
-    </form>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          required
+          value={formData.username}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+          value={formData.password}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+
+        <button type="submit" style={{
+          width: '100%',
+          padding: '10px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          fontSize: '16px',
+          cursor: 'pointer'
+        }}>Sign In</button>
+
+        {message && <p style={{ textAlign: 'center', marginTop: '15px', color: 'gray' }}>{message}</p>}
+      </form>
+    </div>
   );
 }
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px',
+  marginBottom: '15px',
+  border: '1px solid #ccc',
+  borderRadius: '5px',
+  fontSize: '14px'
+};
+
+export default SignInForm;
