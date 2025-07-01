@@ -41,7 +41,7 @@ function SignUpForm() {
         maxWidth: '400px',
         boxShadow: '0 0 10px rgba(0,0,0,0.1)'
       }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign Up</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign Up From</h2>
 
         <input
           type="text"
