@@ -19,8 +19,6 @@ export default function Welcome() {
       <button onClick={() => navigate('/sign_up_page')}>
         SIGN UP
       </button>
-
-
     </>
   )
 }
